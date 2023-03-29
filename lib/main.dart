@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'app/app.dart';
 import 'app/app_observers.dart';
 import 'core/utils/logger/logger.dart';
+import 'core/widgets/restart_app.dart';
 import 'injection_container/injection_container.dart';
 
 void main() {
@@ -35,9 +36,9 @@ void main() {
       runApp(
         EasyLocalization(
           supportedLocales: const [Locale('en'), Locale('ar')],
-          path: 'assets/translations',
+          path: 'assets/translations/',
           fallbackLocale: const Locale('en'),
-          child: App(),
+          child: RestartApp(child: App()),
         ),
       );
     },

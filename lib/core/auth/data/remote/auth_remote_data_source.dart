@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:qit_flutter/core/error/errors.dart';
 
@@ -7,17 +5,40 @@ import '../../../models/user.dart';
 import '../../../utils/constants.dart';
 
 abstract class AuthRemoteDataSource {
+  /// login a User
+  ///
+  /// returns [UserWithToken] : a object holds [User] object with token from server
+  ///
+  /// Throws [ServerBaseError] in case of error from server
+  /// or [ConnectionError] in case of any connection error
   Future<UserWithToken> login({
     required String email,
     required String password,
   });
 
+  /// logout a logged user
+  ///
+  /// Throws [ServerBaseError] in case of error from server
+  /// or [ConnectionError] in case of any connection error
   Future<void> logout({
     bool terminateAllSessions = false,
   });
 
-  Future<User?> check();
+  /// check the current session token
+  ///
+  /// Returns [User] if the current session token is valid, if its not valid will
+  /// throw [UnauthenticatedServerError].
+  ///
+  /// Throws [ServerBaseError] in case of error from server
+  /// or [ConnectionError] in case of any connection error
+  Future<User> check();
 
+  /// register a user
+  ///
+  /// returns [UserWithToken] : a object holds [User] object with token from server
+  ///
+  /// Throws [ServerBaseError] in case of error from server
+  /// or [ConnectionError] in case of any connection error
   Future<UserWithToken> register({
     required String email,
     required String name,
@@ -36,15 +57,21 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
     final Response response;
     try {
       response = await dioClient.get(checkUserEndPoint);
-    } catch (e) {
-      throw ConnectionError(e);
+    } on DioError catch (error) {
+      if (error.response == null) {
+        throw ConnectionError(error);
+      }
+      throw ServerBaseError.fromJson(
+        error.response!.data,
+        error.response!.statusCode,
+      );
     }
     if (response.statusCode == 200 || response.statusCode == 201) {
-      final Map<String, dynamic> json = jsonDecode(response.data);
+      final Map<String, dynamic> json = response.data;
       return User.fromJson(json['user']);
     } else {
       throw ServerBaseError.fromJson(
-        jsonDecode(response.data),
+        response.data,
         response.statusCode,
       );
     }
@@ -55,23 +82,31 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
     required String email,
     required String password,
   }) async {
+    var uri = Uri.parse(loginUserEndPoint);
+    uri = uri.replace(queryParameters: {
+      'email': email,
+      'password': password,
+    });
+
     final Response response;
     try {
-      response = await dioClient.post(loginUserEndPoint,
-          data: json.encode({
-            'email': email,
-            'password': password,
-          }));
-    } catch (e) {
-      throw ConnectionError(e);
+      response = await dioClient.post(uri.toString());
+    } on DioError catch (error) {
+      if (error.response == null) {
+        throw ConnectionError(error);
+      }
+      throw ServerBaseError.fromJson(
+        error.response!.data,
+        error.response!.statusCode,
+      );
     }
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      final Map<String, dynamic> json = jsonDecode(response.data);
+      final Map<String, dynamic> json = response.data;
       return UserWithToken(User.fromJson(json['user']), json['token']);
     } else {
       throw ServerBaseError.fromJson(
-        jsonDecode(response.data),
+        response.data,
         response.statusCode,
       );
     }
@@ -79,19 +114,27 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
 
   @override
   Future<void> logout({bool terminateAllSessions = false}) async {
+    var uri = Uri.parse(logoutUserEndPoint);
+    if (terminateAllSessions) {
+      uri = uri.replace(queryParameters: {'all': 1});
+    }
+
     final Response response;
     try {
-      response = await dioClient.post(
-        logoutUserEndPoint,
-        data: json.encode({'all': terminateAllSessions}),
+      response = await dioClient.post(uri.toString());
+    } on DioError catch (error) {
+      if (error.response == null) {
+        throw ConnectionError(error);
+      }
+      throw ServerBaseError.fromJson(
+        error.response!.data,
+        error.response!.statusCode,
       );
-    } catch (e) {
-      throw ConnectionError(e);
     }
 
     if (response.statusCode != 200 || response.statusCode != 201) {
       throw ServerBaseError.fromJson(
-        jsonDecode(response.data),
+        response.data,
         response.statusCode,
       );
     }
@@ -104,27 +147,33 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
     required String password,
     required String passwordConfirmation,
   }) async {
+    var uri = Uri.parse(registerUserEndPoint);
+    uri = uri.replace(queryParameters: {
+      'email': email,
+      'name': name,
+      'password': password,
+      'password_confirmation': passwordConfirmation,
+    });
+
     final Response response;
     try {
-      response = await dioClient.post(
-        registerUserEndPoint,
-        data: json.encode({
-          'email': email,
-          'name': name,
-          'password': password,
-          'password_confirmation': passwordConfirmation,
-        }),
+      response = await dioClient.post(uri.toString());
+    } on DioError catch (error) {
+      if (error.response == null) {
+        throw ConnectionError(error);
+      }
+      throw ServerBaseError.fromJson(
+        error.response!.data,
+        error.response!.statusCode,
       );
-    } catch (e) {
-      throw ConnectionError(e);
     }
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      final Map<String, dynamic> json = jsonDecode(response.data);
+      final Map<String, dynamic> json = response.data;
       return UserWithToken(User.fromJson(json['user']), json['token']);
     } else {
       throw ServerBaseError.fromJson(
-        jsonDecode(response.data),
+        response.data,
         response.statusCode,
       );
     }

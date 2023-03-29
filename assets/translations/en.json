@@ -1,3 +1,17 @@
 {
-  "hello": "hello"
+  "error_while_login": "Error while login",
+  "login": "login",
+  "create_account": "Create account",
+  "forgot_password": "Forgot password?",
+  "new_to_the_world_of_OIT": "New to the world of OIT? ",
+  "email": "email",
+  "enter_a_email": "enter a email",
+  "not_valid_email_address": "not valid email address",
+  "password": "password",
+  "invalid_password": "invalid password",
+  "re_password": "confirm password",
+  "the_tow_passwords_not_match_each_other": "the tow passwords not match each other",
+  "invalid_name": "invalid name",
+  "name": "name",
+  "an_unexpected_error_occurred": "an unexpected error occurred."
 }

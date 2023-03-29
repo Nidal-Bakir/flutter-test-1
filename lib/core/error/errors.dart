@@ -35,7 +35,7 @@ abstract class ServerBaseError implements BaseError {
     exceptionString += '\nCode: $code';
     exceptionString += '\nMessage: $message';
     exceptionString += '\nErrors: ${errors.toString()}';
-    exceptionString += '----';
+    exceptionString += '\n----';
     return exceptionString;
   }
 
@@ -64,7 +64,11 @@ abstract class ServerBaseError implements BaseError {
   }
 
   factory ServerBaseError.fromJson(Map<String, dynamic> json, int? code) {
-    return ServerBaseError.factory(code, json['message'], json['errors']);
+    return ServerBaseError.factory(
+      code,
+      json['message'] ?? 'no message provided',
+      json['errors'],
+    );
   }
 }
 
