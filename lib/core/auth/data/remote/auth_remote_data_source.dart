@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:qit_flutter/core/error/errors.dart';
 
 import '../../../models/user.dart';
+import '../../../utils/api_request_handler.dart';
 import '../../../utils/constants.dart';
 import '../../models/user_with_token.dart';
 
@@ -61,27 +62,13 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
 
   @override
   Future<User> check() async {
-    final Response response;
-    try {
-      response = await dioClient.get(kCheckUserEndPoint);
-    } on DioError catch (error) {
-      if (error.response == null) {
-        throw ConnectionError(error);
-      }
-      throw ServerBaseError.fromJson(
-        error.response!.data,
-        error.response!.statusCode,
-      );
-    }
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      final Map<String, dynamic> json = response.data;
-      return User.fromJson(json['user']);
-    } else {
-      throw ServerBaseError.fromJson(
-        response.data,
-        response.statusCode,
-      );
-    }
+    return APIRequestHandler<User>(
+      dioClient: dioClient,
+      uri: Uri.parse(kCheckUserEndPoint),
+      onSuccess: (data) {
+        return User.fromJson(data['user']);
+      },
+    ).processGET();
   }
 
   @override
@@ -89,34 +76,20 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
     required String email,
     required String password,
   }) async {
-    var uri = Uri.parse(kLoginUserEndPoint);
-    uri = uri.replace(queryParameters: {
-      'email': email,
-      'password': password,
-    });
+    final uri = Uri.parse(kLoginUserEndPoint).replace(
+      queryParameters: {
+        'email': email,
+        'password': password,
+      },
+    );
 
-    final Response response;
-    try {
-      response = await dioClient.post(uri.toString());
-    } on DioError catch (error) {
-      if (error.response == null) {
-        throw ConnectionError(error);
-      }
-      throw ServerBaseError.fromJson(
-        error.response!.data,
-        error.response!.statusCode,
-      );
-    }
-
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      final Map<String, dynamic> json = response.data;
-      return UserWithToken(User.fromJson(json['user']), json['token']);
-    } else {
-      throw ServerBaseError.fromJson(
-        response.data,
-        response.statusCode,
-      );
-    }
+    return APIRequestHandler<UserWithToken>(
+      dioClient: dioClient,
+      uri: uri,
+      onSuccess: (data) {
+        return UserWithToken(User.fromJson(data['user']), data['token']);
+      },
+    ).processPOST();
   }
 
   @override
@@ -126,25 +99,13 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
       uri = uri.replace(queryParameters: {'all': 1});
     }
 
-    final Response response;
-    try {
-      response = await dioClient.post(uri.toString());
-    } on DioError catch (error) {
-      if (error.response == null) {
-        throw ConnectionError(error);
-      }
-      throw ServerBaseError.fromJson(
-        error.response!.data,
-        error.response!.statusCode,
-      );
-    }
-
-    if (response.statusCode != 200 || response.statusCode != 201) {
-      throw ServerBaseError.fromJson(
-        response.data,
-        response.statusCode,
-      );
-    }
+    return APIRequestHandler<void>(
+      dioClient: dioClient,
+      uri: uri,
+      onSuccess: (data) {
+        return;
+      },
+    ).processPOST();
   }
 
   @override
@@ -154,35 +115,21 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
     required String password,
     required String passwordConfirmation,
   }) async {
-    var uri = Uri.parse(kRegisterUserEndPoint);
-    uri = uri.replace(queryParameters: {
-      'email': email,
-      'name': name,
-      'password': password,
-      'password_confirmation': passwordConfirmation,
-    });
+    final uri = Uri.parse(kRegisterUserEndPoint).replace(
+      queryParameters: {
+        'email': email,
+        'name': name,
+        'password': password,
+        'password_confirmation': passwordConfirmation,
+      },
+    );
 
-    final Response response;
-    try {
-      response = await dioClient.post(uri.toString());
-    } on DioError catch (error) {
-      if (error.response == null) {
-        throw ConnectionError(error);
-      }
-      throw ServerBaseError.fromJson(
-        error.response!.data,
-        error.response!.statusCode,
-      );
-    }
-
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      final Map<String, dynamic> json = response.data;
-      return UserWithToken(User.fromJson(json['user']), json['token']);
-    } else {
-      throw ServerBaseError.fromJson(
-        response.data,
-        response.statusCode,
-      );
-    }
+    return APIRequestHandler<UserWithToken>(
+      dioClient: dioClient,
+      uri: uri,
+      onSuccess: (data) {
+        return UserWithToken(User.fromJson(data['user']), data['token']);
+      },
+    ).processPOST();
   }
 }

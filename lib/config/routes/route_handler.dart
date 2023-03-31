@@ -5,10 +5,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qit_flutter/core/auth/presentation/managers/auth_bloc.dart';
 import 'package:qit_flutter/core/auth/presentation/screens/login_screen.dart';
 import 'package:qit_flutter/core/auth/presentation/screens/register_screen.dart';
-import 'package:qit_flutter/core/models/product.dart';
 import 'package:qit_flutter/core/widgets/loading_indicator.dart';
 import 'package:qit_flutter/core/widgets/restart_app.dart';
 
+import '../../features/products/models/product/product.dart';
 import '../../features/products/presentation/screens/Latest_products_screen.dart';
 import '../../features/products/presentation/screens/product_screen.dart';
 import '../../features/products/presentation/screens/product_search_screen.dart';

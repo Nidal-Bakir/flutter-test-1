@@ -1,8 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:qit_flutter/core/utils/constants.dart';
-import 'package:qit_flutter/features/products/models/product_result_holder.dart';
+import 'package:qit_flutter/features/products/models/product_result_holder/product_result_holder.dart';
 
 import '../../../core/error/errors.dart';
+import '../../../core/utils/api_request_handler.dart';
 
 abstract class ProductsRemoteDataSource {
   const ProductsRemoteDataSource();
@@ -26,35 +27,21 @@ class ProductsRemoteDataSourceImpl extends ProductsRemoteDataSource {
   @override
   Future<ProductResultHolder> getLatestProducts(int page,
       [String? keyWords]) async {
-    var uri = Uri.parse(kProductEndPoint);
-    uri = uri.replace(queryParameters: {
-      'perpage': kPerPageCount.toString(),
-      'page': page.toString(),
-      if (keyWords != null || (keyWords?.isNotEmpty ?? false))
-        'keyword': keyWords,
-    });
+    final uri = Uri.parse(kProductEndPoint).replace(
+      queryParameters: {
+        'perpage': kPerPageCount.toString(),
+        'page': page.toString(),
+        if (keyWords != null || (keyWords?.isNotEmpty ?? false))
+          'keyword': keyWords,
+      },
+    );
 
-    final Response response;
-    try {
-      response = await dioClient.get(uri.toString());
-    } on DioError catch (error) {
-      if (error.response == null) {
-        throw ConnectionError(error);
-      }
-      throw ServerBaseError.fromJson(
-        error.response!.data,
-        error.response!.statusCode,
-      );
-    }
-
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      final Map<String, dynamic> json = response.data;
-      return ProductResultHolder.fromJson(json);
-    } else {
-      throw ServerBaseError.fromJson(
-        response.data,
-        response.statusCode,
-      );
-    }
+    return APIRequestHandler<ProductResultHolder>(
+      dioClient: dioClient,
+      uri: uri,
+      onSuccess: (data) {
+        return ProductResultHolder.fromJson(data);
+      },
+    ).processGET();
   }
 }

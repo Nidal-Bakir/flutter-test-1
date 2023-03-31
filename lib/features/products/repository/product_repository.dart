@@ -3,9 +3,9 @@ import 'dart:collection';
 import 'package:qit_flutter/core/error/errors.dart';
 import 'package:qit_flutter/core/utils/either.dart';
 import 'package:qit_flutter/features/products/data/products_remote_data_source.dart';
-import 'package:qit_flutter/features/products/models/product_result_holder.dart';
+import 'package:qit_flutter/features/products/models/product_result_holder/product_result_holder.dart';
 
-import '../../../core/models/product.dart';
+import '../models/product/product.dart';
 
 class ProductRepository {
   final ProductsRemoteDataSource _productsRemoteDataSource;

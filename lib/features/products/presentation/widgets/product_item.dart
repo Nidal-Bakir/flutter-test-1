@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:qit_flutter/config/routes/app_router.dart';
 
 import '../../../../config/routes/routes.dart';
-import '../../../../core/models/product.dart' hide Image;
+import '../../models/product/product.dart' hide Image;
 
 class ProductItem extends StatelessWidget {
   final Product product;

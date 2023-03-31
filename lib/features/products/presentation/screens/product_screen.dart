@@ -1,7 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../core/models/product.dart' hide Image;
+import '../../models/product/product.dart' hide Image;
 import '../widgets/line_with_text_on_row.dart';
 
 class ProductScreen extends StatelessWidget {

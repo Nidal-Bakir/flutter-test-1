@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:qit_flutter/core/models/product.dart';
+
+import '../product/product.dart';
 
 part 'product_result_holder.freezed.dart';
 part 'product_result_holder.g.dart';

@@ -6,7 +6,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:stream_transform/stream_transform.dart';
 
 import '../../../../core/error/errors.dart';
-import '../../../../core/models/product.dart';
+import '../../models/product/product.dart';
 import '../../repository/product_repository.dart';
 
 part 'products_bloc.freezed.dart';
