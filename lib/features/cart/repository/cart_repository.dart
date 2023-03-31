@@ -18,6 +18,12 @@ class CartRepository {
       return Left(error);
     }
 
+    _originalProductQuantity.clear();
+    _cart!.products?.forEach((e) {
+      _originalProductQuantity[e.productId] = e.totalQuantity;
+    });
+    _changedProductsQuantity.clear();
+
     return Right(_cart!);
   }
 
@@ -55,8 +61,10 @@ class CartRepository {
 
   final _changedProductsQuantity = <int, int>{};
 
-  // final _originalProductQuantity = <int, int>{};
+  final _originalProductQuantity = <int, int>{};
 
+  /// mimic the server behavior, so we do not send request to the server on every
+  /// quantity increase/decrease. i.e. change now save later (optimistic approach)
   Cart setProductQuantityLocally({
     required int productId,
     required int quantity,
@@ -115,10 +123,48 @@ class CartRepository {
     return setProductQuantityLocally(productId: productId, quantity: 0);
   }
 
-  Future<Either<BaseError, Cart>> saveLocallyChangedCart(
-      [bool concurrently = false]) async {
-    if (concurrently) {
-      // Future.wait(_);
+  Future<Either<BaseError, Cart>> concurrentlySaveLocallyChangedCart() async {
+    // in case if the quantity increased then decreased again and vise versa
+    // in this case its redundant to send this info to the server because
+    // the quantity still equal the original value
+    _changedProductsQuantity.removeWhere(
+      (key, value) => _originalProductQuantity[key] == value,
+    );
+
+    final listOfKeys = _changedProductsQuantity.keys.toList(growable: false);
+
+    final resultList = await Future.wait([
+      for (final productId in listOfKeys)
+        addProductToCart(
+          productId: productId,
+          quantity: _changedProductsQuantity[productId]!,
+        )
+    ]);
+
+    BaseError? baseError;
+    Cart? savedCart;
+
+    for (int i = 0; i < resultList.length; i++) {
+      resultList[i].fold((error) {
+        baseError = error;
+      }, (cart) {
+        _changedProductsQuantity.remove(listOfKeys[i]);
+        savedCart = cart;
+      });
+    }
+
+    if (baseError != null) {
+      return Left(baseError!);
+    } else {
+      _cart = savedCart;
+
+      _changedProductsQuantity.clear();
+      _originalProductQuantity.clear();
+      _cart!.products?.forEach((e) {
+        _originalProductQuantity[e.productId] = e.totalQuantity;
+      });
+
+      return Right(savedCart!);
     }
   }
 }
