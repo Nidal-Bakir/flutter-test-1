@@ -25,6 +25,7 @@ class App extends StatelessWidget {
         ),
       child: MaterialApp(
         title: 'QIT',
+        debugShowCheckedModeBanner: false,
         theme: defaultLightTheme(context.locale.languageCode),
         onGenerateRoute: AppRouter.router.generator,
         locale: context.locale,

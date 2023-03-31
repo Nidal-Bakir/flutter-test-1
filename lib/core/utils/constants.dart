@@ -1,12 +1,14 @@
-const baseAPiUrl = 'https://test.qit.company/api';
+const kBaseAPiUrl = 'https://test.qit.company/api';
 
-const userApiUrl = '$baseAPiUrl/user';
-const registerUserEndPoint = '$userApiUrl/register';
-const loginUserEndPoint = '$userApiUrl/login';
-const checkUserEndPoint = '$userApiUrl/check';
-const logoutUserEndPoint = '$userApiUrl/logout';
+const kUserApiUrl = '$kBaseAPiUrl/user';
+const kRegisterUserEndPoint = '$kUserApiUrl/register';
+const kLoginUserEndPoint = '$kUserApiUrl/login';
+const kCheckUserEndPoint = '$kUserApiUrl/check';
+const kLogoutUserEndPoint = '$kUserApiUrl/logout';
 
-const productEndPoint = '$baseAPiUrl/product';
+const kProductEndPoint = '$kBaseAPiUrl/product';
 
-const cartEndPoint = '$baseAPiUrl/cart';
-const cartItemEndPoint = '$baseAPiUrl/item';
+const kCartEndPoint = '$kBaseAPiUrl/cart';
+const kCartItemEndPoint = '$kBaseAPiUrl/item';
+
+const kPerPageCount = 20;

@@ -51,7 +51,7 @@ class DioUtil {
           }
 
           //catch the 401
-          if (e.requestOptions.path.contains(userApiUrl)) {
+          if (e.requestOptions.path.contains(kUserApiUrl)) {
             // the Auth Bloc will handle this automatically
             return;
           }

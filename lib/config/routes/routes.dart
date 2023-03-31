@@ -9,6 +9,10 @@ class Routes {
   static String login = "/login";
   static String register = "/register";
   static String products = '/products';
+  static String productsSearch = '/products/search';
+  static String product = '/product';
+  static String logoutDialog = '/product/logout';
+  static String expiredSessionDialog = '/expiredSession';
 
   static void configureRoutes(FluroRouter router) {
     router.notFoundHandler = Handler(
@@ -20,5 +24,10 @@ class Routes {
     router.define(rootSplash, handler: rootHandler);
     router.define(login, handler: loginHandler);
     router.define(register, handler: registerHandler);
+    router.define(products, handler: productsHandler);
+    router.define(productsSearch, handler: productsSearchHandler);
+    router.define(product, handler: productHandler);
+    router.define(logoutDialog, handler: logoutDialogHandler);
+    router.define(expiredSessionDialog, handler: expiredSessionDialogHandler);
   }
 }

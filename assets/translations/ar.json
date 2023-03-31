@@ -9,9 +9,19 @@
   "not_valid_email_address": "البريد الإلكتروني غير صالح",
   "invalid_password": "كلمة المرور غير صالحة",
   "password": "كلمة المرور",
-  "re_password": "إعادة كلمة المرور",
+  "re_password": "تاكيد كلمة المرور",
   "the_tow_passwords_not_match_each_other": "كلمتا المرور لم تتطابقا",
   "invalid_name": "اسم غير صالح",
   "name": "اسم",
-  "an_unexpected_error_occurred": "حدث خطأ غير متوقع."
+  "guest": "ضيف",
+  "okay": "حسناً",
+  "description": "التفاصيل",
+  "retry": "اعادة المحاولة",
+  "price": "السعر",
+  "terminate_all_sessions": "إنهاء جميع الجلسات",
+  "an_unexpected_error_occurred": "حدث خطأ غير متوقع.",
+  "You_need_to_login_aging": "انت بحاجة الى تسجيل الدخول",
+  "expired_session": "انتهت الجلسة",
+  "search_for_products": "ابحث عن المنتجات",
+  "please_check_your_internet_connection": "يرجى التحقق من اتصال الإنترنت الخاص بك!"
 }

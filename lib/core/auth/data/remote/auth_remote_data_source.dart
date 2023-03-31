@@ -3,14 +3,18 @@ import 'package:qit_flutter/core/error/errors.dart';
 
 import '../../../models/user.dart';
 import '../../../utils/constants.dart';
+import '../../models/user_with_token.dart';
 
 abstract class AuthRemoteDataSource {
+  const AuthRemoteDataSource();
+
   /// login a User
   ///
   /// returns [UserWithToken] : a object holds [User] object with token from server
   ///
-  /// Throws [ServerBaseError] in case of error from server
-  /// or [ConnectionError] in case of any connection error
+  /// Throws [BaseError] :
+  /// * [ServerBaseError] in case of error from server
+  /// * [ConnectionError] in case of any connection error
   Future<UserWithToken> login({
     required String email,
     required String password,
@@ -18,27 +22,30 @@ abstract class AuthRemoteDataSource {
 
   /// logout a logged user
   ///
-  /// Throws [ServerBaseError] in case of error from server
-  /// or [ConnectionError] in case of any connection error
+  /// Throws [BaseError] :
+  /// * [ServerBaseError] in case of error from server
+  /// * [ConnectionError] in case of any connection error
   Future<void> logout({
     bool terminateAllSessions = false,
   });
 
-  /// check the current session token
+  /// Check the current session token
   ///
   /// Returns [User] if the current session token is valid, if its not valid will
   /// throw [UnauthenticatedServerError].
   ///
-  /// Throws [ServerBaseError] in case of error from server
-  /// or [ConnectionError] in case of any connection error
+  /// Throws [BaseError] :
+  /// * [ServerBaseError] in case of error from server
+  /// * [ConnectionError] in case of any connection error
   Future<User> check();
 
-  /// register a user
+  /// Register a user
   ///
-  /// returns [UserWithToken] : a object holds [User] object with token from server
+  /// Returns [UserWithToken] : a object holds [User] object with token from server
   ///
-  /// Throws [ServerBaseError] in case of error from server
-  /// or [ConnectionError] in case of any connection error
+  /// Throws [BaseError] :
+  /// * [ServerBaseError] in case of error from server
+  /// * [ConnectionError] in case of any connection error
   Future<UserWithToken> register({
     required String email,
     required String name,
@@ -50,13 +57,13 @@ abstract class AuthRemoteDataSource {
 class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
   final Dio dioClient;
 
-  AuthRemoteDataSourceImpl(this.dioClient);
+  const AuthRemoteDataSourceImpl(this.dioClient);
 
   @override
   Future<User> check() async {
     final Response response;
     try {
-      response = await dioClient.get(checkUserEndPoint);
+      response = await dioClient.get(kCheckUserEndPoint);
     } on DioError catch (error) {
       if (error.response == null) {
         throw ConnectionError(error);
@@ -82,7 +89,7 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
     required String email,
     required String password,
   }) async {
-    var uri = Uri.parse(loginUserEndPoint);
+    var uri = Uri.parse(kLoginUserEndPoint);
     uri = uri.replace(queryParameters: {
       'email': email,
       'password': password,
@@ -114,7 +121,7 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
 
   @override
   Future<void> logout({bool terminateAllSessions = false}) async {
-    var uri = Uri.parse(logoutUserEndPoint);
+    var uri = Uri.parse(kLogoutUserEndPoint);
     if (terminateAllSessions) {
       uri = uri.replace(queryParameters: {'all': 1});
     }
@@ -147,7 +154,7 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
     required String password,
     required String passwordConfirmation,
   }) async {
-    var uri = Uri.parse(registerUserEndPoint);
+    var uri = Uri.parse(kRegisterUserEndPoint);
     uri = uri.replace(queryParameters: {
       'email': email,
       'name': name,

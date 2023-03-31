@@ -4,6 +4,7 @@ import 'package:qit_flutter/core/error/errors.dart';
 
 import '../../models/user.dart';
 import '../../utils/either.dart';
+import '../models/user_with_token.dart';
 
 class AuthRepository {
   final AuthLocalDataSource _authLocalDataSource;

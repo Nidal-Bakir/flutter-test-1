@@ -87,9 +87,9 @@ ThemeData defaultLightTheme(String langCode) {
           minimumSize: MaterialStateProperty.resolveWith(
             (states) {
               if (states.contains(MaterialState.pressed)) {
-                return const Size(145, 33);
+                return const Size(149.5, 39.5);
               }
-              return const Size(150, 35);
+              return const Size(150, 40);
             },
           ),
         ),

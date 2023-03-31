@@ -13,11 +13,3 @@ class User with _$User {
 
   factory User.fromJson(Map<String, Object?> json) => _$UserFromJson(json);
 }
-
-/// temp holder
-class UserWithToken {
-  final User user;
-  final String token;
-
-  UserWithToken(this.user, this.token);
-}

@@ -1,5 +1,6 @@
 import 'auth_injection.dart';
 import 'dio_init_client.dart';
+import 'latest_products_injection.dart';
 import 'prefs_init.dart';
 
 Future<void> init({forRestart = false}) async {
@@ -7,5 +8,7 @@ Future<void> init({forRestart = false}) async {
 
   authInit();
 
-  initDioClient();
+  await initDioClient();
+
+  latestProductsInit();
 }

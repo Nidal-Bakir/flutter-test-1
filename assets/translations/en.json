@@ -13,5 +13,15 @@
   "the_tow_passwords_not_match_each_other": "the tow passwords not match each other",
   "invalid_name": "invalid name",
   "name": "name",
-  "an_unexpected_error_occurred": "an unexpected error occurred."
+  "guest": "Guest",
+  "okay": "Okay",
+  "retry": "Retry",
+  "price": "Price",
+  "description": "Description",
+  "terminate_all_sessions": "Terminate all sessions",
+  "an_unexpected_error_occurred": "An unexpected error occurred.",
+  "You_need_to_login": "You need to login",
+  "expired_session": "Expired session",
+  "search_for_products": "Search for products",
+  "please_check_your_internet_connection": "Please check your internet connection"
 }

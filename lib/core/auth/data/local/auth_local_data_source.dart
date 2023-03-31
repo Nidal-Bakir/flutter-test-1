@@ -6,6 +6,8 @@ import 'package:xxtea/xxtea.dart';
 import '../../../models/user.dart';
 
 abstract class AuthLocalDataSource {
+  const AuthLocalDataSource();
+
   Future<User?> getLocalUser();
 
   Future<bool> setLocalUser(User user);
@@ -21,7 +23,7 @@ class AuthLocalDataSourceImpl extends AuthLocalDataSource {
   final SharedPreferences preferences;
   final _userKey = 'user';
 
-  AuthLocalDataSourceImpl(this.preferences);
+  const AuthLocalDataSourceImpl(this.preferences);
 
   @override
   Future<User?> getLocalUser() async {
