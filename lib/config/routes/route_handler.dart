@@ -7,6 +7,7 @@ import 'package:qit_flutter/core/auth/presentation/screens/login_screen.dart';
 import 'package:qit_flutter/core/auth/presentation/screens/register_screen.dart';
 import 'package:qit_flutter/core/widgets/loading_indicator.dart';
 import 'package:qit_flutter/core/widgets/restart_app.dart';
+import 'package:qit_flutter/features/cart/presentation/screens/cart_screen.dart';
 
 import '../../features/products/models/product/product.dart';
 import '../../features/products/presentation/screens/Latest_products_screen.dart';
@@ -32,6 +33,16 @@ final registerHandler = Handler(
 final productsHandler = Handler(
     handlerFunc: (BuildContext? context, Map<String, List<String>> params) {
   return const LatestProductsScreen();
+});
+
+final cartHandler = Handler(
+    handlerFunc: (BuildContext? context, Map<String, List<String>> params) {
+  final user = context?.read<AuthBloc>().getCurrentUser();
+  if (user == null) {
+    return const LogInScreen();
+  }
+
+  return const CartScreen();
 });
 
 final productsSearchHandler = Handler(

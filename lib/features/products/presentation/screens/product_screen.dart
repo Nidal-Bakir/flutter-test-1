@@ -1,6 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../cart/presentation/managers/cart_bloc.dart';
 import '../../models/product/product.dart' hide Image;
 import '../widgets/line_with_text_on_row.dart';
 
@@ -51,23 +53,8 @@ class ProductScreen extends StatelessWidget {
               hasScrollBody: false,
               child: Column(
                 children: [
-                  const Spacer(),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () {},
-                            child: Text('add_to_cart'.tr()),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
+                  Spacer(),
+                  _AddToCartButton(productId: product.productId),
                 ],
               ),
             )
@@ -232,6 +219,107 @@ class _Price extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _AddToCartButton extends StatefulWidget {
+  final int productId;
+
+  const _AddToCartButton({
+    Key? key,
+    required this.productId,
+  }) : super(key: key);
+
+  @override
+  State<_AddToCartButton> createState() => _AddToCartButtonState();
+}
+
+class _AddToCartButtonState extends State<_AddToCartButton>
+    with SingleTickerProviderStateMixin {
+  late final _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 300),
+  );
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 8,
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: ElevatedButton.icon(
+              icon: AddToCartIcon(
+                controller: _controller,
+              ),
+              onPressed: () {
+                _controller.forward(from: 0.0);
+
+                context.read<CartBloc>().add(
+                      CartEvent.productAdded(
+                        productId: widget.productId,
+                        quantity: 1,
+                      ),
+                    );
+              },
+              label: Text('add_to_cart'.tr()),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class AddToCartIcon extends StatefulWidget {
+  final double size;
+  final AnimationController controller;
+
+  const AddToCartIcon({
+    super.key,
+    this.size = 24.0,
+    required this.controller,
+  });
+
+  @override
+  State<AddToCartIcon> createState() => _AddToCartIconState();
+}
+
+class _AddToCartIconState extends State<AddToCartIcon> {
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _fadeAnimation =
+        Tween<double>(begin: 0.0, end: 1.0).animate(widget.controller);
+    _slideAnimation =
+        Tween<Offset>(begin: const Offset(-2, 0), end: Offset.zero).animate(
+            CurvedAnimation(parent: widget.controller, curve: Curves.easeOut));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: _fadeAnimation,
+      child: SlideTransition(
+        position: _slideAnimation,
+        child: Icon(
+          Icons.add_shopping_cart,
+          size: widget.size,
+        ),
+      ),
     );
   }
 }

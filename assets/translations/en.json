@@ -19,6 +19,7 @@
   "price": "Price",
   "description": "Description",
   "add_to_cart": "ADD TO CART",
+  "cart": "CART",
   "terminate_all_sessions": "Terminate all sessions",
   "an_unexpected_error_occurred": "An unexpected error occurred.",
   "You_need_to_login": "You need to login",

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:qit_flutter/config/routes/app_router.dart';
+import 'package:qit_flutter/features/cart/presentation/managers/cart_bloc.dart';
 
 import '../config/routes/routes.dart';
 import '../config/theme/app_theme.dart';
@@ -18,11 +19,18 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<AuthBloc>(
-      create: (context) => GetIt.I.get<AuthBloc>()
-        ..add(
-          const AuthEvent.currentUserLoaded(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<AuthBloc>(
+          create: (context) => GetIt.I.get<AuthBloc>()
+            ..add(
+              const AuthEvent.currentUserLoaded(),
+            ),
         ),
+        BlocProvider<CartBloc>(
+          create: (context) => GetIt.I.get<CartBloc>(),
+        ),
+      ],
       child: MaterialApp(
         title: 'QIT',
         debugShowCheckedModeBanner: false,

@@ -16,7 +16,7 @@ class PrimaryColorBackgroundForScaffold extends StatelessWidget {
       children: [
         Container(
           decoration: BoxDecoration(
-            color: colorScheme.surface,
+            color: Colors.grey[200],
           ),
         ),
         Container(

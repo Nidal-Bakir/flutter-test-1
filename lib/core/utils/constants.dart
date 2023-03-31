@@ -9,6 +9,6 @@ const kLogoutUserEndPoint = '$kUserApiUrl/logout';
 const kProductEndPoint = '$kBaseAPiUrl/product';
 
 const kCartEndPoint = '$kBaseAPiUrl/cart';
-const kCartItemEndPoint = '$kBaseAPiUrl/item';
+const kCartItemEndPoint = '$kCartEndPoint/item';
 
 const kPerPageCount = 20;

@@ -20,7 +20,7 @@ class CartRepository {
 
     _originalProductQuantity.clear();
     _cart!.products?.forEach((e) {
-      _originalProductQuantity[e.productId] = e.totalQuantity;
+      _originalProductQuantity[e.productId] = e.productId;
     });
     _changedProductsQuantity.clear();
 
@@ -80,16 +80,17 @@ class CartRepository {
 
     final index = cart.products!.indexOf(productInCart);
 
-    final newList = [...cart.products!];
+    final newProductsList = [...cart.products!];
 
     final totalPrice = cart.totalPrice;
     if (quantity == 0) {
-      newList.removeAt(index);
+      newProductsList.removeAt(index);
 
       cart = cart.copyWith(
-        products: newList,
+        products: newProductsList,
         totalPrice: totalPrice.copyWith(
-          value: totalPrice.value - productInCart.unitPrice.value,
+          value: totalPrice.value -
+              (productInCart.unitPrice.value * productInCart.totalQuantity),
         ),
       );
     } else {
@@ -104,10 +105,10 @@ class CartRepository {
       productInCart = productInCart.copyWith(
           totalPrice: productTotalPrice, totalQuantity: quantity);
 
-      newList[index] = productInCart;
+      newProductsList[index] = productInCart;
 
       cart = cart.copyWith(
-        products: newList,
+        products: newProductsList,
         totalPrice: totalPrice.copyWith(
           value: totalPrice.value +
               (productInCart.unitPrice.value * (isAdd ? 1 : -1)),
@@ -123,7 +124,11 @@ class CartRepository {
     return setProductQuantityLocally(productId: productId, quantity: 0);
   }
 
-  Future<Either<BaseError, Cart>> concurrentlySaveLocallyChangedCart() async {
+  Future<Either<BaseError, Cart?>> concurrentlySaveLocallyChangedCart() async {
+    if (_cart == null || _changedProductsQuantity.isEmpty) {
+      return Right(_cart);
+    }
+
     // in case if the quantity increased then decreased again and vise versa
     // in this case its redundant to send this info to the server because
     // the quantity still equal the original value
@@ -156,12 +161,13 @@ class CartRepository {
     if (baseError != null) {
       return Left(baseError!);
     } else {
+      savedCart ??= _cart;
       _cart = savedCart;
 
       _changedProductsQuantity.clear();
       _originalProductQuantity.clear();
       _cart!.products?.forEach((e) {
-        _originalProductQuantity[e.productId] = e.totalQuantity;
+        _originalProductQuantity[e.productId] = e.productId;
       });
 
       return Right(savedCart!);

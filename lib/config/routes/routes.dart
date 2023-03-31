@@ -9,6 +9,7 @@ class Routes {
   static String login = "/login";
   static String register = "/register";
   static String products = '/products';
+  static String cart = '/products/cart';
   static String productsSearch = '/products/search';
   static String product = '/product';
   static String logoutDialog = '/product/logout';
@@ -25,6 +26,7 @@ class Routes {
     router.define(login, handler: loginHandler);
     router.define(register, handler: registerHandler);
     router.define(products, handler: productsHandler);
+    router.define(cart, handler: cartHandler);
     router.define(productsSearch, handler: productsSearchHandler);
     router.define(product, handler: productHandler);
     router.define(logoutDialog, handler: logoutDialogHandler);

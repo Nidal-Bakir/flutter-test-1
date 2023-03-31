@@ -96,7 +96,7 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
   Future<void> logout({bool terminateAllSessions = false}) async {
     var uri = Uri.parse(kLogoutUserEndPoint);
     if (terminateAllSessions) {
-      uri = uri.replace(queryParameters: {'all': 1});
+      uri = uri.replace(queryParameters: {'all': 1.toString()});
     }
 
     return APIRequestHandler<void>(
