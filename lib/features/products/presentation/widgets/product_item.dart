@@ -19,14 +19,11 @@ class ProductItem extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       borderRadius: BorderRadius.circular(18),
       child: Material(
+        clipBehavior: Clip.antiAlias,
         type: MaterialType.card,
         borderOnForeground: true,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18),
-          side: BorderSide(
-            width: 0.5,
-            color: theme.colorScheme.primary,
-          ),
         ),
         child: InkWell(
           onTap: () {

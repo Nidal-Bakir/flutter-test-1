@@ -67,7 +67,7 @@ final logoutDialogHandler = Handler(
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text("Logout?", style: textTheme.headline6),
+            title: Text("logout".tr(), style: textTheme.headline6),
             content: StatefulBuilder(
               builder: (BuildContext context,
                   void Function(void Function()) setState) {
@@ -101,7 +101,9 @@ final logoutDialogHandler = Handler(
                                   ),
                                 );
                           },
-                          child: const Text("LOGOUT"),
+                          child: Text(
+                            "logout".tr().toUpperCase(),
+                          ),
                         ),
                       );
                     },

@@ -1,6 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:qit_flutter/config/routes/app_router.dart';
+import 'package:qit_flutter/config/routes/routes.dart';
 import 'package:qit_flutter/core/utils/global_function.dart';
 import 'package:qit_flutter/core/widgets/sized_box_16_h.dart';
 
@@ -84,9 +86,37 @@ class _LogInScreenState extends State<LogInScreen> {
                                 builder: (context, state) {
                                   return state.maybeWhen(
                                     inProgress: () => const LoadingIndicator(),
-                                    orElse: () => ElevatedButton(
-                                      child: Text('login'.tr()),
-                                      onPressed: () => _onPressed(context),
+                                    orElse: () => Column(
+                                      children: [
+                                        ElevatedButton(
+                                          child: Text('login'.tr()),
+                                          onPressed: () => _onPressed(context),
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          mainAxisSize: MainAxisSize.max,
+                                          children: [
+                                            const Flexible(child: Divider()),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Text('or'.tr()),
+                                            ),
+                                            const Flexible(child: Divider()),
+                                          ],
+                                        ),
+                                        TextButton(
+                                          child: Text('login_as_guest'.tr()),
+                                          onPressed: () {
+                                            AppRouter.router.navigateTo(
+                                              context,
+                                              Routes.products,
+                                              clearStack: true,
+                                            );
+                                          },
+                                        ),
+                                      ],
                                     ),
                                   );
                                 },

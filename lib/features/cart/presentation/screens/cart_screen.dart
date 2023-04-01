@@ -26,102 +26,109 @@ class _CartScreenState extends State<CartScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return PrimaryColorBackgroundForScaffold(
-      scaffoldWidget: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          automaticallyImplyLeading: true,
-          title: Text(
-            'cart'.tr(),
-            style: theme.textTheme.headline5,
-          ),
-        ),
-        body: Column(
-          children: [
-            BlocBuilder<CartBloc, CartState>(
-              builder: (context, state) {
-                return state.when(
-                  loadSuccess: (cart) {
-                    if (cart.products == null) {
-                      return const SizedBox.shrink();
-                    }
-
-                    return Expanded(
-                      child: ListView.builder(
-                        itemBuilder: (context, index) {
-                          return CartItem(
-                            key: ValueKey(cart.products![index].productId),
-                            cartProduct: cart.products![index],
-                          );
-                        },
-                        itemCount: cart.products!.length,
-                      ),
-                    );
-                  },
-                  inProgress: () => const Center(child: LoadingIndicator()),
-                  loadFailure: (error) {
-                    return Center(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          if (error is NoInternetConnection)
-                            Text(
-                              'please_check_your_internet_connection'.tr(),
-                              style: theme.textTheme.subtitle2,
-                            ),
-                          if (error is! NoInternetConnection)
-                            Text(
-                              'an_unexpected_error_occurred'.tr(),
-                              style: theme.textTheme.subtitle2,
-                            ),
-                          const SizedBox16H(),
-                          ElevatedButton(
-                            onPressed: () {
-                              context
-                                  .read<CartBloc>()
-                                  .add(const CartEvent.cartLoaded());
-                            },
-                            child: Text('retry'.tr()),
-                          )
-                        ],
-                      ),
-                    );
-                  },
-                );
-              },
+    return WillPopScope(
+      onWillPop: () async {
+        context.read<CartBloc>().add(const CartEvent.cartSaved());
+        return true;
+      },
+      child: PrimaryColorBackgroundForScaffold(
+        scaffoldWidget: Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            automaticallyImplyLeading: true,
+            title: Text(
+              'cart'.tr(),
+              style: theme.textTheme.headline5,
             ),
-            Divider(thickness: 5, height: 5, color: theme.colorScheme.primary),
-            BlocBuilder<CartBloc, CartState>(
-              builder: (context, state) {
-                return state.maybeWhen(
-                  orElse: () => const SizedBox.shrink(),
-                  loadSuccess: (cart) {
-                    return SizedBox(
-                      height: 50,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          ),
+          body: Column(
+            children: [
+              BlocBuilder<CartBloc, CartState>(
+                builder: (context, state) {
+                  return state.when(
+                    loadSuccess: (cart) {
+                      if (cart.products == null) {
+                        return const SizedBox.shrink();
+                      }
+
+                      return Expanded(
+                        child: ListView.builder(
+                          itemBuilder: (context, index) {
+                            return CartItem(
+                              key: ValueKey(cart.products![index].productId),
+                              cartProduct: cart.products![index],
+                            );
+                          },
+                          itemCount: cart.products!.length,
+                        ),
+                      );
+                    },
+                    inProgress: () => const Center(child: LoadingIndicator()),
+                    loadFailure: (error) {
+                      return Center(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(
-                              'Total:',
-                              style: theme.textTheme.headline6,
-                            ),
-                            Text(
-                              '${cart.totalPrice.currency} ${cart.totalPrice.value.toStringAsFixed(2)}',
-                              style: theme.textTheme.headline6,
-                            ),
-                            // Text(),
+                            if (error is NoInternetConnection)
+                              Text(
+                                'please_check_your_internet_connection'.tr(),
+                                style: theme.textTheme.subtitle2,
+                              ),
+                            if (error is! NoInternetConnection)
+                              Text(
+                                'an_unexpected_error_occurred'.tr(),
+                                style: theme.textTheme.subtitle2,
+                              ),
+                            const SizedBox16H(),
+                            ElevatedButton(
+                              onPressed: () {
+                                context
+                                    .read<CartBloc>()
+                                    .add(const CartEvent.cartLoaded());
+                              },
+                              child: Text('retry'.tr()),
+                            )
                           ],
                         ),
-                      ),
-                    );
-                  },
-                );
-              },
-            )
-          ],
+                      );
+                    },
+                  );
+                },
+              ),
+              Divider(
+                  thickness: 5, height: 5, color: theme.colorScheme.primary),
+              BlocBuilder<CartBloc, CartState>(
+                builder: (context, state) {
+                  return state.maybeWhen(
+                    orElse: () => const SizedBox.shrink(),
+                    loadSuccess: (cart) {
+                      return SizedBox(
+                        height: 50,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                '${'total'.tr()}:',
+                                style: theme.textTheme.headline6,
+                              ),
+                              Text(
+                                '${cart.totalPrice.currency} ${cart.totalPrice.value.toStringAsFixed(2)}',
+                                style: theme.textTheme.headline6,
+                              ),
+                              // Text(),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              )
+            ],
+          ),
         ),
       ),
     );

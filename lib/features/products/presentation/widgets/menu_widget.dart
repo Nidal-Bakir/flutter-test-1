@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qit_flutter/core/auth/presentation/managers/auth_bloc.dart';
+import 'package:qit_flutter/features/products/presentation/widgets/line_with_text_on_row.dart';
 
 import '../../../../config/routes/app_router.dart';
 import '../../../../config/routes/routes.dart';
@@ -88,10 +89,40 @@ class MenuScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             const Divider(),
+            const SizedBox(height: 20),
+            LineWithTextOnRow(text: 'language'.tr()),
+            const _Lang(),
             const SizedBox(height: 60),
           ],
         ),
       ),
     ));
+  }
+}
+
+class _Lang extends StatelessWidget {
+  const _Lang({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsetsDirectional.only(start: 8),
+      child: DropdownButton<Locale>(
+        value: context.locale,
+        items: [
+          DropdownMenuItem<Locale>(
+            value: const Locale('en'),
+            child: Text('english'.tr()),
+          ),
+          DropdownMenuItem<Locale>(
+            value: const Locale('ar'),
+            child: Text('arabic'.tr()),
+          )
+        ],
+        onChanged: (local) {
+          context.setLocale(local!);
+        },
+      ),
+    );
   }
 }

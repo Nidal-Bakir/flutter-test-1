@@ -28,8 +28,6 @@ dependencies:
 
   dio: ^5.1.0
 
-  flutter_screenutil: ^5.7.0
-
   easy_localization: ^3.0.1
 
   flutter_bloc: ^8.1.2
