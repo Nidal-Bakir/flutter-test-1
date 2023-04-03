@@ -1,20 +1,21 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:qit_flutter/core/auth/presentation/managers/auth_bloc.dart';
-import 'package:qit_flutter/features/products/presentation/widgets/line_with_text_on_row.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../config/routes/app_router.dart';
 import '../../../../config/routes/routes.dart';
+import '../../../../core/auth/presentation/managers/auth_provider.dart';
+import 'line_with_text_on_row.dart';
 
-class MenuScreen extends StatelessWidget {
+class MenuScreen extends ConsumerWidget {
   const MenuScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
-    final user = context.read<AuthBloc>().getCurrentUser();
+
+    final user = ref.watch(currentUserProvider);
 
     return SafeArea(
         child: SingleChildScrollView(

@@ -1,13 +1,13 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:qit_flutter/config/routes/app_router.dart';
-import 'package:qit_flutter/core/auth/presentation/managers/auth_bloc.dart';
-import 'package:qit_flutter/core/error/errors.dart';
-import 'package:qit_flutter/core/utils/global_function.dart';
-import 'package:qit_flutter/core/widgets/qit_logo.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../config/routes/app_router.dart';
 import '../../../../config/routes/routes.dart';
+import '../../../../core/auth/presentation/managers/auth_provider.dart';
+import '../../../../core/error/errors.dart';
+import '../../../../core/utils/global_function.dart';
+import '../../../../core/widgets/qit_logo.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -22,63 +22,14 @@ class SplashScreen extends StatelessWidget {
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.end,
             crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const Spacer(flex: 3),
-              const QITLogo(
+            children: const [
+              Spacer(flex: 3),
+              QITLogo(
                 width: 150,
               ),
-              BlocConsumer<AuthBloc, AuthState>(
-                listener: (context, state) {
-                  state.whenOrNull(
-                    authSuccess: (user) {
-                      if (user == null) {
-                        AppRouter.router.navigateTo(
-                          context,
-                          Routes.login,
-                          replace: true,
-                        );
-                      }
-                    },
-                    authUpdateSuccess: (user) {
-                      AppRouter.router.navigateTo(
-                        context,
-                        Routes.products,
-                        replace: true,
-                      );
-                    },
-                    authFailure: (error) {
-                      if (error is UnauthenticatedServerError) {
-                        AppRouter.router.navigateTo(
-                          context,
-                          Routes.login,
-                          replace: true,
-                        );
-                      } else {
-                        showErrorSnackBar(
-                          context,
-                          'an_unexpected_error_occurred'.tr(),
-                        );
-                      }
-                    },
-                  );
-                },
-                builder: (context, state) {
-                  return state.maybeWhen(
-                    authFailure: (error) {
-                      if (error is! UnauthenticatedServerError) {
-                        return ElevatedButton(
-                          onPressed: () {},
-                          child: const Icon(Icons.replay_rounded),
-                        );
-                      }
-                      return const SizedBox.shrink();
-                    },
-                    orElse: () => const SizedBox.shrink(),
-                  );
-                },
-              ),
-              const Spacer(flex: 3),
-              const Padding(
+              _UserAuthState(),
+              Spacer(flex: 3),
+              Padding(
                 padding: EdgeInsets.symmetric(vertical: 16.0),
                 child: Text(
                   'QIT App 2022 all right reserved ',
@@ -88,6 +39,75 @@ class SplashScreen extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _UserAuthState extends ConsumerStatefulWidget {
+  const _UserAuthState({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  ConsumerState createState() => __UserAuthStateState();
+}
+
+class __UserAuthStateState extends ConsumerState<_UserAuthState> {
+  bool checkedUser = false;
+
+  @override
+  Widget build(BuildContext context) {
+    ref.listen(authNotifierProvider, (previous, next) {
+      next.whenOrNull(
+        data: (user) {
+          if (user == null) {
+            AppRouter.router.navigateTo(
+              context,
+              Routes.login,
+              replace: true,
+            );
+            return;
+          }
+          if (checkedUser) {
+            AppRouter.router.navigateTo(
+              context,
+              Routes.products,
+              replace: true,
+            );
+            return;
+          }
+
+          checkedUser = true;
+        },
+        error: (error, _) {
+          if (error is UnauthenticatedServerError) {
+            AppRouter.router.navigateTo(
+              context,
+              Routes.login,
+              replace: true,
+            );
+          } else {
+            showErrorSnackBar(
+              context,
+              'an_unexpected_error_occurred'.tr(),
+            );
+          }
+        },
+      );
+    });
+
+    final authState = ref.watch(authNotifierProvider);
+    return authState.maybeWhen(
+      error: (error, _) {
+        if (error is! UnauthenticatedServerError) {
+          return ElevatedButton(
+            onPressed: () {},
+            child: const Icon(Icons.replay_rounded),
+          );
+        }
+        return const SizedBox.shrink();
+      },
+      orElse: () => const SizedBox.shrink(),
     );
   }
 }

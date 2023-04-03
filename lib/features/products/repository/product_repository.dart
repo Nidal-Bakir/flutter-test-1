@@ -7,10 +7,10 @@ import 'package:qit_flutter/features/products/models/product_result_holder/produ
 
 import '../models/product/product.dart';
 
-class ProductRepository {
+class ProductsRepository {
   final ProductsRemoteDataSource _productsRemoteDataSource;
 
-  ProductRepository(this._productsRemoteDataSource);
+  ProductsRepository(this._productsRemoteDataSource);
 
   ProductResultHolder? _productResultHolder;
   String? _keyword;

@@ -1,14 +1,14 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:qit_flutter/core/auth/presentation/managers/auth_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:qit_flutter/core/auth/presentation/managers/auth_provider.dart';
 import 'package:qit_flutter/core/auth/presentation/screens/login_screen.dart';
 import 'package:qit_flutter/core/auth/presentation/screens/register_screen.dart';
 import 'package:qit_flutter/core/widgets/loading_indicator.dart';
 import 'package:qit_flutter/core/widgets/restart_app.dart';
-import 'package:qit_flutter/features/cart/presentation/screens/cart_screen.dart';
 
+import '../../features/cart/presentation/screens/cart_screen.dart';
 import '../../features/products/models/product/product.dart';
 import '../../features/products/presentation/screens/Latest_products_screen.dart';
 import '../../features/products/presentation/screens/product_screen.dart';
@@ -37,12 +37,9 @@ final productsHandler = Handler(
 
 final cartHandler = Handler(
     handlerFunc: (BuildContext? context, Map<String, List<String>> params) {
-  final user = context?.read<AuthBloc>().getCurrentUser();
-  if (user == null) {
-    return const LogInScreen();
-  }
-
-  return const CartScreen();
+  return const AuthGuard(
+    guardedChild: CartScreen(),
+  );
 });
 
 final productsSearchHandler = Handler(
@@ -86,20 +83,19 @@ final logoutDialogHandler = Handler(
               },
             ),
             actions: <Widget>[
-              BlocBuilder<AuthBloc, AuthState>(
-                builder: (context, state) {
-                  return state.maybeWhen(
-                    inProgress: () => const LoadingIndicator(),
+              Consumer(
+                builder: (context, ref, child) {
+                  final authState = ref.watch(authNotifierProvider);
+
+                  return authState.maybeWhen(
+                    loading: () => const LoadingIndicator(),
                     orElse: () {
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 8.0, right: 8.0),
                         child: TextButton(
                           onPressed: () {
-                            context.read<AuthBloc>().add(
-                                  AuthEvent.logOutRequested(
-                                    terminateAllSessions: terminateAllSessions,
-                                  ),
-                                );
+                            ref.read(authNotifierProvider.notifier).logOut(
+                                terminateAllSessions: terminateAllSessions);
                           },
                           child: Text(
                             "logout".tr().toUpperCase(),
@@ -147,3 +143,21 @@ final expiredSessionDialogHandler = Handler(
       ).then((value) => RestartApp.restart(context));
       return;
     });
+
+class AuthGuard extends ConsumerWidget {
+  final Widget guardedChild;
+
+  const AuthGuard({
+    required this.guardedChild,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentUser = ref.read(currentUserProvider);
+    if (currentUser == null) {
+      return const LogInScreen();
+    }
+    return guardedChild;
+  }
+}

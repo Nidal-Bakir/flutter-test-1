@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app/app.dart';
 import 'app/app_observers.dart';
@@ -39,7 +40,7 @@ void main() {
           supportedLocales: const [Locale('en'), Locale('ar')],
           path: 'assets/translations',
           fallbackLocale: const Locale('en'),
-          child: RestartApp(child: App()),
+          child: RestartApp(child: ProviderScope(child: App())),
         ),
       );
     },

@@ -13,8 +13,8 @@ void latestProductsInit() {
   );
 
   // repositories
-  di.registerFactory<ProductRepository>(
-    () => ProductRepository(di.get()),
+  di.registerFactory<ProductsRepository>(
+    () => ProductsRepository(di.get()),
   );
 
   // data sources

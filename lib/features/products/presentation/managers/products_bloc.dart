@@ -22,7 +22,7 @@ EventTransformer<E> throttleDroppable<E>(Duration duration) {
 }
 
 class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
-  final ProductRepository _productRepository;
+  final ProductsRepository _productRepository;
 
   ProductsBloc(this._productRepository)
       : super(const ProductsState.inProgress()) {

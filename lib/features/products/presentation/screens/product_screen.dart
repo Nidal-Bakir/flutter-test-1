@@ -1,10 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:qit_flutter/config/routes/app_router.dart';
-import 'package:qit_flutter/config/routes/routes.dart';
-import 'package:qit_flutter/core/auth/presentation/managers/auth_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../config/routes/app_router.dart';
+import '../../../../config/routes/routes.dart';
+import '../../../../core/auth/presentation/managers/auth_provider.dart';
 import '../../../cart/presentation/managers/cart_bloc.dart';
 import '../../models/product/product.dart' hide Image;
 import '../widgets/line_with_text_on_row.dart';
@@ -226,7 +226,7 @@ class _Price extends StatelessWidget {
   }
 }
 
-class _AddToCartButton extends StatefulWidget {
+class _AddToCartButton extends ConsumerStatefulWidget {
   final int productId;
 
   const _AddToCartButton({
@@ -235,10 +235,10 @@ class _AddToCartButton extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<_AddToCartButton> createState() => _AddToCartButtonState();
+  ConsumerState<_AddToCartButton> createState() => _AddToCartButtonState();
 }
 
-class _AddToCartButtonState extends State<_AddToCartButton>
+class _AddToCartButtonState extends ConsumerState<_AddToCartButton>
     with SingleTickerProviderStateMixin {
   late final _controller = AnimationController(
     vsync: this,
@@ -253,7 +253,7 @@ class _AddToCartButtonState extends State<_AddToCartButton>
 
   @override
   Widget build(BuildContext context) {
-    final user = context.read<AuthBloc>().getCurrentUser();
+    final user = ref.watch(currentUserProvider);
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: 16,

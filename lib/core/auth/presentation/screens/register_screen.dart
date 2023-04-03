@@ -1,11 +1,11 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:qit_flutter/core/auth/presentation/managers/auth_bloc.dart';
-import 'package:qit_flutter/core/widgets/loading_indicator.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../widgets/loading_indicator.dart';
 import '../../../widgets/qit_logo.dart';
 import '../../../widgets/sized_box_16_h.dart';
+import '../managers/auth_provider.dart';
 import '../widgets/email_text_field.dart';
 import '../widgets/name_text_field.dart';
 import '../widgets/password_with_confirmation.dart';
@@ -27,8 +27,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final mediaQuery = MediaQuery.of(context);
-    final screenHeight = mediaQuery.size.height - mediaQuery.viewPadding.top;
     final theme = Theme.of(context);
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.primary,
@@ -88,16 +86,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               ),
                               const SizedBox16H(),
                               const SizedBox16H(),
-                              BlocBuilder<AuthBloc, AuthState>(
-                                builder: (context, state) {
-                                  return state.maybeWhen(
-                                    inProgress: () => const LoadingIndicator(),
+                              Consumer(
+                                builder: (context, ref, child) {
+                                  final authState =
+                                      ref.watch(authNotifierProvider);
+
+                                  return authState.maybeWhen(
                                     orElse: () {
                                       return ElevatedButton(
                                         child: Text('create_account'.tr()),
-                                        onPressed: () => _onPressed(context),
+                                        onPressed: () => _onPressed(ref),
                                       );
                                     },
+                                    loading: () => const LoadingIndicator(),
                                   );
                                 },
                               ),
@@ -116,17 +117,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  void _onPressed(BuildContext context) {
+  void _onPressed(WidgetRef ref) {
     if (_keyFrom.currentState?.validate() ?? false) {
       _keyFrom.currentState?.save();
 
-      context.read<AuthBloc>().add(
-            AuthEvent.registerRequested(
-              name: _name,
-              email: _email,
-              password: _password,
-              passwordConfirmation: _password,
-            ),
+      ref.read(authNotifierProvider.notifier).register(
+            name: _name,
+            email: _email,
+            password: _password,
+            passwordConf: _password,
           );
     }
   }

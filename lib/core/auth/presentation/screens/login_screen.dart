@@ -1,15 +1,15 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:qit_flutter/config/routes/app_router.dart';
-import 'package:qit_flutter/config/routes/routes.dart';
-import 'package:qit_flutter/core/utils/global_function.dart';
-import 'package:qit_flutter/core/widgets/sized_box_16_h.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../config/routes/app_router.dart';
+import '../../../../config/routes/routes.dart';
+import '../../../utils/global_function.dart';
 import '../../../widgets/loading_indicator.dart';
 import '../../../widgets/qit_logo.dart';
 import '../../../widgets/restart_app.dart';
-import '../managers/auth_bloc.dart';
+import '../../../widgets/sized_box_16_h.dart';
+import '../managers/auth_provider.dart';
 import '../widgets/create_account_text_button.dart';
 import '../widgets/email_text_field.dart';
 import '../widgets/forget_password_text_button.dart';
@@ -68,59 +68,10 @@ class _LogInScreenState extends State<LogInScreen> {
                                 _password = password!;
                               }),
                               const ForgetPasswordTextButton(),
-                              const SizedBox16H(),
-                              BlocConsumer<AuthBloc, AuthState>(
-                                listener: (context, state) {
-                                  state.whenOrNull(
-                                    authSuccess: (user) {
-                                      RestartApp.restart(context);
-                                    },
-                                    authFailure: (error) {
-                                      showErrorSnackBar(
-                                        context,
-                                        'error_while_login'.tr(),
-                                      );
-                                    },
-                                  );
-                                },
-                                builder: (context, state) {
-                                  return state.maybeWhen(
-                                    inProgress: () => const LoadingIndicator(),
-                                    orElse: () => Column(
-                                      children: [
-                                        ElevatedButton(
-                                          child: Text('login'.tr()),
-                                          onPressed: () => _onPressed(context),
-                                        ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          mainAxisSize: MainAxisSize.max,
-                                          children: [
-                                            const Flexible(child: Divider()),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Text('or'.tr()),
-                                            ),
-                                            const Flexible(child: Divider()),
-                                          ],
-                                        ),
-                                        TextButton(
-                                          child: Text('login_as_guest'.tr()),
-                                          onPressed: () {
-                                            AppRouter.router.navigateTo(
-                                              context,
-                                              Routes.products,
-                                              clearStack: true,
-                                            );
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                },
+                              _LoginState(
+                                onLoginPressed: onLoginPressed,
                               ),
+                              const SizedBox16H(),
                               const SizedBox(
                                 height: 32.0,
                               ),
@@ -141,15 +92,81 @@ class _LogInScreenState extends State<LogInScreen> {
     );
   }
 
-  void _onPressed(BuildContext context) {
+  void onLoginPressed(ref) {
     if (_keyFrom.currentState?.validate() ?? false) {
       _keyFrom.currentState?.save();
-      context.read<AuthBloc>().add(
-            AuthEvent.loginRequested(
-              email: _email.trim(),
-              password: _password.trim(),
-            ),
+      ref.read(authNotifierProvider.notifier).login(
+            email: _email.trim(),
+            password: _password.trim(),
           );
     }
+  }
+}
+
+class _LoginState extends ConsumerWidget {
+  final void Function(WidgetRef ref) onLoginPressed;
+
+  const _LoginState({
+    required this.onLoginPressed,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    ref.listen(authNotifierProvider, (previous, next) {
+      next.whenOrNull(
+        data: (user) {
+          RestartApp.restart(context);
+        },
+        error: (error, _) {
+          showErrorSnackBar(
+            context,
+            'error_while_login'.tr(),
+          );
+        },
+      );
+    });
+
+    final authState = ref.watch(authNotifierProvider);
+
+    return authState.maybeWhen(
+      loading: () => const LoadingIndicator(),
+      orElse: () {
+        return Column(
+          children: [
+            ElevatedButton(
+              child: Text('login'.tr()),
+              onPressed: () => _onPressed(ref),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                const Flexible(child: Divider()),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text('or'.tr()),
+                ),
+                const Flexible(child: Divider()),
+              ],
+            ),
+            TextButton(
+              child: Text('login_as_guest'.tr()),
+              onPressed: () {
+                AppRouter.router.navigateTo(
+                  context,
+                  Routes.products,
+                  clearStack: true,
+                );
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _onPressed(WidgetRef ref) {
+    onLoginPressed(ref);
   }
 }

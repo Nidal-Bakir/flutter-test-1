@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:qit_flutter/core/error/errors.dart';
-import 'package:qit_flutter/core/utils/constants.dart';
 
 import '../auth/data/local/auth_local_data_source.dart';
 import '../error/security_error_flow.dart';
@@ -51,10 +50,7 @@ class DioUtil {
           }
 
           //catch the 401
-          if (e.requestOptions.path.contains(kUserApiUrl)) {
-            // the Auth Bloc will handle this automatically
-            return;
-          }
+
           final error = ServerBaseError.fromJson(
             jsonDecode(e.response!.data),
             statusCode,
