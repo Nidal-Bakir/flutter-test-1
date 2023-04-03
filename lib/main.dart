@@ -13,6 +13,7 @@ import 'injection_container/injection_container.dart';
 
 void main() {
   Logger.loggingLevel = LoggingLevel.verbose;
+
   WidgetsFlutterBinding.ensureInitialized();
 
   runZonedGuarded(

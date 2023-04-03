@@ -1,6 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:qit_flutter/config/routes/app_router.dart';
+import 'package:qit_flutter/config/routes/routes.dart';
+import 'package:qit_flutter/core/auth/presentation/managers/auth_bloc.dart';
 
 import '../../../cart/presentation/managers/cart_bloc.dart';
 import '../../models/product/product.dart' hide Image;
@@ -250,6 +253,7 @@ class _AddToCartButtonState extends State<_AddToCartButton>
 
   @override
   Widget build(BuildContext context) {
+    final user = context.read<AuthBloc>().getCurrentUser();
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: 16,
@@ -263,6 +267,11 @@ class _AddToCartButtonState extends State<_AddToCartButton>
                 controller: _controller,
               ),
               onPressed: () {
+                if (user == null) {
+                  AppRouter.router.navigateTo(context, Routes.login);
+                  return;
+                }
+
                 _controller.forward(from: 0.0);
 
                 context.read<CartBloc>().add(
