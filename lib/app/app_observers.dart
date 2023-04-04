@@ -13,7 +13,7 @@ class AppRiverpodObserver extends ProviderObserver {
     --- riverpod Log
     Provider Added: ${provider.name ?? provider.runtimeType} 
     value: $value
-    ProviderContainer: $container
+    ProviderContainer: hashCode# ${container.hashCode}
     --- riverpod Log''';
 
     Logger.i(logMessage);
@@ -31,7 +31,7 @@ class AppRiverpodObserver extends ProviderObserver {
     Provider Updated: ${provider.name ?? provider.runtimeType} 
     previousValue: $previousValue
     newValue: $newValue
-    ProviderContainer: $container
+    ProviderContainer: hashCode# ${container.hashCode}
     --- riverpod Log''';
 
     Logger.i(logMessage);
@@ -43,7 +43,7 @@ class AppRiverpodObserver extends ProviderObserver {
     final logMessage = '''
     --- riverpod Log
     Provider Disposed: ${provider.name ?? provider.runtimeType} 
-    ProviderContainer: $container
+    ProviderContainer: hashCode# ${container.hashCode}
     --- riverpod Log''';
 
     Logger.i(logMessage);
@@ -59,7 +59,7 @@ class AppRiverpodObserver extends ProviderObserver {
     final logMessage = '''
     --- riverpod Log
     Provider Disposed: ${provider.name ?? provider.runtimeType} 
-    ProviderContainer: $container
+    ProviderContainer: hashCode# ${container.hashCode}
     --- riverpod Log''';
 
     Logger.w(logMessage);

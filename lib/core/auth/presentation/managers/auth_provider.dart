@@ -31,21 +31,25 @@ class AuthNotifier extends AsyncNotifier<User?> {
     state = const AsyncValue.loading();
     final user = await _authRepository.getLocalUser();
 
-    if (user != null) {
-      checkCurrentUser();
+    if (user == null) {
+      return null;
     }
 
-    return user;
+    final result = await _authRepository.check();
+    if (result.isLeft()) {
+      throw result.getLeftValue();
+    }
+    return result.getRightValue();
   }
 
-  Future<void> checkCurrentUser() async {
+  void checkCurrentUser() async {
     state = const AsyncValue.loading();
 
     final result = await _authRepository.check();
 
-    result.fold(
-      (error) => state = AsyncValue.error(error, StackTrace.current),
-      (user) => state = AsyncValue.data(user),
+    state = result.fold(
+      (error) => AsyncValue.error(error, StackTrace.current),
+      (user) => AsyncValue.data(user),
     );
   }
 

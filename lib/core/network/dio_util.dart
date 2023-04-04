@@ -1,10 +1,8 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
-import 'package:qit_flutter/core/error/errors.dart';
 
 import '../auth/data/local/auth_local_data_source.dart';
+import '../error/errors.dart';
 import '../error/security_error_flow.dart';
 
 class DioUtil {
@@ -52,10 +50,12 @@ class DioUtil {
           //catch the 401
 
           final error = ServerBaseError.fromJson(
-            jsonDecode(e.response!.data),
+            e.response!.data,
             statusCode,
           );
           SecurityErrorFlow().riseSecurityError(error);
+
+          handler.next(e);
         },
       ),
     );

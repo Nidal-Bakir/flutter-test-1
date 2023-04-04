@@ -9,22 +9,11 @@ import '../../../products/presentation/widgets/primary_color_background_for_scaf
 import '../managers/cart_provider.dart';
 import '../widgets/cart_item.dart';
 
-class CartScreen extends ConsumerStatefulWidget {
+class CartScreen extends ConsumerWidget {
   const CartScreen({Key? key}) : super(key: key);
 
   @override
-  ConsumerState<CartScreen> createState() => _CartScreenState();
-}
-
-class _CartScreenState extends ConsumerState<CartScreen> {
-  @override
-  void initState() {
-    super.initState();
-    ref.read(cartNotifierProvider.notifier).loadCart();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final cart = ref.watch(cartNotifierProvider);
     final theme = Theme.of(context);
     return WillPopScope(

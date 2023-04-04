@@ -25,7 +25,7 @@ class CartNotifier extends AsyncNotifier<Cart?> {
   @override
   FutureOr<Cart?> build() async {
     final currentUser = ref.watch(currentUserProvider);
-    if (currentUser != null) {
+    if (currentUser == null) {
       return null;
     }
 

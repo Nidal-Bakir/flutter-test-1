@@ -43,20 +43,13 @@ class SplashScreen extends StatelessWidget {
   }
 }
 
-class _UserAuthState extends ConsumerStatefulWidget {
+class _UserAuthState extends ConsumerWidget {
   const _UserAuthState({
     Key? key,
   }) : super(key: key);
 
   @override
-  ConsumerState createState() => __UserAuthStateState();
-}
-
-class __UserAuthStateState extends ConsumerState<_UserAuthState> {
-  bool checkedUser = false;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     ref.listen(authNotifierProvider, (previous, next) {
       next.whenOrNull(
         data: (user) {
@@ -66,18 +59,13 @@ class __UserAuthStateState extends ConsumerState<_UserAuthState> {
               Routes.login,
               replace: true,
             );
-            return;
-          }
-          if (checkedUser) {
+          } else {
             AppRouter.router.navigateTo(
               context,
               Routes.products,
               replace: true,
             );
-            return;
           }
-
-          checkedUser = true;
         },
         error: (error, _) {
           if (error is UnauthenticatedServerError) {
