@@ -1,34 +1,35 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:qit_flutter/core/widgets/loading_indicator.dart';
-import 'package:qit_flutter/core/widgets/no_internet_connection.dart';
-import 'package:qit_flutter/core/widgets/sized_box_16_h.dart';
-import 'package:qit_flutter/features/cart/presentation/managers/cart_bloc.dart';
-import 'package:qit_flutter/features/cart/presentation/widgets/cart_item.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/widgets/loading_indicator.dart';
+import '../../../../core/widgets/no_internet_connection.dart';
+import '../../../../core/widgets/sized_box_16_h.dart';
 import '../../../products/presentation/widgets/primary_color_background_for_scaffold.dart';
+import '../managers/cart_provider.dart';
+import '../widgets/cart_item.dart';
 
-class CartScreen extends StatefulWidget {
+class CartScreen extends ConsumerStatefulWidget {
   const CartScreen({Key? key}) : super(key: key);
 
   @override
-  State<CartScreen> createState() => _CartScreenState();
+  ConsumerState<CartScreen> createState() => _CartScreenState();
 }
 
-class _CartScreenState extends State<CartScreen> {
+class _CartScreenState extends ConsumerState<CartScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<CartBloc>().add(const CartEvent.cartLoaded());
+    ref.read(cartNotifierProvider.notifier).loadCart();
   }
 
   @override
   Widget build(BuildContext context) {
+    final cart = ref.watch(cartNotifierProvider);
     final theme = Theme.of(context);
     return WillPopScope(
       onWillPop: () async {
-        context.read<CartBloc>().add(const CartEvent.cartSaved());
+        ref.read(cartNotifierProvider.notifier).saveCart();
         return true;
       },
       child: PrimaryColorBackgroundForScaffold(
@@ -43,87 +44,84 @@ class _CartScreenState extends State<CartScreen> {
           ),
           body: Column(
             children: [
-              BlocBuilder<CartBloc, CartState>(
-                builder: (context, state) {
-                  return state.when(
-                    loadSuccess: (cart) {
-                      if (cart.products == null) {
-                        return const SizedBox.shrink();
-                      }
+              cart.when(
+                data: (cart) {
+                  if (cart == null) {
+                    return const SizedBox.shrink();
+                  }
 
-                      return Expanded(
-                        child: ListView.builder(
-                          itemBuilder: (context, index) {
-                            return CartItem(
-                              key: ValueKey(cart.products![index].productId),
-                              cartProduct: cart.products![index],
-                            );
+                  if (cart.products == null) {
+                    return const SizedBox.shrink();
+                  }
+
+                  return Expanded(
+                    child: ListView.builder(
+                      itemBuilder: (context, index) {
+                        return CartItem(
+                          key: ValueKey(cart.products![index].productId),
+                          cartProduct: cart.products![index],
+                        );
+                      },
+                      itemCount: cart.products!.length,
+                    ),
+                  );
+                },
+                loading: () => const Center(child: LoadingIndicator()),
+                error: (error, _) {
+                  return Center(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (error is NoInternetConnection)
+                          Text(
+                            'please_check_your_internet_connection'.tr(),
+                            style: theme.textTheme.subtitle2,
+                          ),
+                        if (error is! NoInternetConnection)
+                          Text(
+                            'an_unexpected_error_occurred'.tr(),
+                            style: theme.textTheme.subtitle2,
+                          ),
+                        const SizedBox16H(),
+                        ElevatedButton(
+                          onPressed: () {
+                            ref.read(cartNotifierProvider.notifier).loadCart();
                           },
-                          itemCount: cart.products!.length,
-                        ),
-                      );
-                    },
-                    inProgress: () => const Center(child: LoadingIndicator()),
-                    loadFailure: (error) {
-                      return Center(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            if (error is NoInternetConnection)
-                              Text(
-                                'please_check_your_internet_connection'.tr(),
-                                style: theme.textTheme.subtitle2,
-                              ),
-                            if (error is! NoInternetConnection)
-                              Text(
-                                'an_unexpected_error_occurred'.tr(),
-                                style: theme.textTheme.subtitle2,
-                              ),
-                            const SizedBox16H(),
-                            ElevatedButton(
-                              onPressed: () {
-                                context
-                                    .read<CartBloc>()
-                                    .add(const CartEvent.cartLoaded());
-                              },
-                              child: Text('retry'.tr()),
-                            )
-                          ],
-                        ),
-                      );
-                    },
+                          child: Text('retry'.tr()),
+                        )
+                      ],
+                    ),
                   );
                 },
               ),
               Divider(
                   thickness: 5, height: 5, color: theme.colorScheme.primary),
-              BlocBuilder<CartBloc, CartState>(
-                builder: (context, state) {
-                  return state.maybeWhen(
-                    orElse: () => const SizedBox.shrink(),
-                    loadSuccess: (cart) {
-                      return SizedBox(
-                        height: 50,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                '${'total'.tr()}:',
-                                style: theme.textTheme.headline6,
-                              ),
-                              Text(
-                                '${cart.totalPrice.currency} ${cart.totalPrice.value.toStringAsFixed(2)}',
-                                style: theme.textTheme.headline6,
-                              ),
-                              // Text(),
-                            ],
+              cart.maybeWhen(
+                orElse: () => const SizedBox.shrink(),
+                data: (cart) {
+                  if (cart == null) {
+                    return const SizedBox.shrink();
+                  }
+                  return SizedBox(
+                    height: 50,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            '${'total'.tr()}:',
+                            style: theme.textTheme.headline6,
                           ),
-                        ),
-                      );
-                    },
+                          Text(
+                            '${cart.totalPrice.currency} ${cart.totalPrice.value.toStringAsFixed(2)}',
+                            style: theme.textTheme.headline6,
+                          ),
+                          // Text(),
+                        ],
+                      ),
+                    ),
                   );
                 },
               )

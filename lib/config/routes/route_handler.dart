@@ -12,7 +12,7 @@ import '../../features/cart/presentation/screens/cart_screen.dart';
 import '../../features/products/models/product/product.dart';
 import '../../features/products/presentation/screens/Latest_products_screen.dart';
 import '../../features/products/presentation/screens/product_screen.dart';
-import '../../features/products/presentation/screens/product_search_screen.dart';
+import '../../features/products/presentation/screens/search_products_screen.dart';
 import '../../features/splash/presentation/screens/splash_screen.dart';
 
 final rootHandler = Handler(
@@ -44,7 +44,7 @@ final cartHandler = Handler(
 
 final productsSearchHandler = Handler(
     handlerFunc: (BuildContext? context, Map<String, List<String>> params) {
-  return const ProductsSearchScreen();
+  return const SearchProductsScreen();
 });
 
 final productHandler = Handler(
@@ -85,6 +85,10 @@ final logoutDialogHandler = Handler(
             actions: <Widget>[
               Consumer(
                 builder: (context, ref, child) {
+                  ref.listen(authNotifierProvider, (previous, next) {
+                    next.whenData((value) => RestartApp.restart(context));
+                  });
+
                   final authState = ref.watch(authNotifierProvider);
 
                   return authState.maybeWhen(

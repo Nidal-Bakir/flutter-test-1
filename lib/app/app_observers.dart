@@ -1,38 +1,67 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/utils/logger/logger.dart';
 
-class AppBlocObserver extends BlocObserver {
+class AppRiverpodObserver extends ProviderObserver {
   @override
-  void onCreate(BlocBase bloc) {
-    super.onCreate(bloc);
-    final logMessage = 'bloc created: $bloc';
+  void didAddProvider(
+    ProviderBase<Object?> provider,
+    Object? value,
+    ProviderContainer container,
+  ) {
+    final logMessage = '''
+    --- riverpod Log
+    Provider Added: ${provider.name ?? provider.runtimeType} 
+    value: $value
+    ProviderContainer: $container
+    --- riverpod Log''';
 
     Logger.i(logMessage);
   }
 
   @override
-  void onTransition(Bloc bloc, Transition transition) {
-    super.onTransition(bloc, transition);
-    final logMessage =
-        'bloc: $bloc  \n Event: ${transition.event}  \n current state: ${transition.currentState}  \n nextState: ${transition.nextState}';
+  void didUpdateProvider(
+    ProviderBase<Object?> provider,
+    Object? previousValue,
+    Object? newValue,
+    ProviderContainer container,
+  ) {
+    final logMessage = '''
+    --- riverpod Log
+    Provider Updated: ${provider.name ?? provider.runtimeType} 
+    previousValue: $previousValue
+    newValue: $newValue
+    ProviderContainer: $container
+    --- riverpod Log''';
 
     Logger.i(logMessage);
   }
 
   @override
-  void onError(BlocBase bloc, Object error, StackTrace stackTrace) {
-    super.onError(bloc, error, stackTrace);
-    final logMessage = 'bloc error in: $bloc';
+  void didDisposeProvider(
+      ProviderBase<Object?> provider, ProviderContainer container) {
+    final logMessage = '''
+    --- riverpod Log
+    Provider Disposed: ${provider.name ?? provider.runtimeType} 
+    ProviderContainer: $container
+    --- riverpod Log''';
 
-    Logger.f(logMessage, error, stackTrace);
+    Logger.i(logMessage);
   }
 
   @override
-  void onClose(BlocBase bloc) {
-    super.onClose(bloc);
-    final logMessage = 'bloc closed: $bloc';
+  void providerDidFail(
+    ProviderBase<Object?> provider,
+    Object error,
+    StackTrace stackTrace,
+    ProviderContainer container,
+  ) {
+    final logMessage = '''
+    --- riverpod Log
+    Provider Disposed: ${provider.name ?? provider.runtimeType} 
+    ProviderContainer: $container
+    --- riverpod Log''';
 
-    Logger.i(logMessage);
+    Logger.w(logMessage);
   }
 }

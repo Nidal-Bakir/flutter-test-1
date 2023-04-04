@@ -4,12 +4,12 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../models/product/product.dart';
 
-part 'products_state_result.freezed.dart';
+part 'products_state_result_holder.freezed.dart';
 
 @freezed
-class ProductsStateResult with _$ProductsStateResult {
-  factory ProductsStateResult({
+class ProductsStateResultHolder with _$ProductsStateResultHolder {
+  factory ProductsStateResultHolder({
     required UnmodifiableListView<Product> products,
     required bool canLoadMore,
-  }) = _ProductsStateResult;
+  }) = _ProductsStateResultHolder;
 }

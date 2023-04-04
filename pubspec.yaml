@@ -30,9 +30,8 @@ dependencies:
 
   easy_localization: ^3.0.1
 
-  flutter_bloc: ^8.1.2
-  bloc_concurrency: ^0.2.1
-  stream_transform: ^2.1.0
+
+  rxdart: ^0.27.7
 
   stack_trace: ^1.10.0
 

@@ -5,7 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../config/routes/app_router.dart';
 import '../../../../config/routes/routes.dart';
 import '../../../../core/auth/presentation/managers/auth_provider.dart';
-import '../../../cart/presentation/managers/cart_bloc.dart';
+import '../../../../core/models/user.dart';
+import '../../../cart/presentation/managers/cart_provider.dart';
 import '../../models/product/product.dart' hide Image;
 import '../widgets/line_with_text_on_row.dart';
 
@@ -56,7 +57,7 @@ class ProductScreen extends StatelessWidget {
               hasScrollBody: false,
               child: Column(
                 children: [
-                  Spacer(),
+                  const Spacer(),
                   _AddToCartButton(productId: product.productId),
                 ],
               ),
@@ -266,27 +267,27 @@ class _AddToCartButtonState extends ConsumerState<_AddToCartButton>
               icon: AddToCartIcon(
                 controller: _controller,
               ),
-              onPressed: () {
-                if (user == null) {
-                  AppRouter.router.navigateTo(context, Routes.login);
-                  return;
-                }
-
-                _controller.forward(from: 0.0);
-
-                context.read<CartBloc>().add(
-                      CartEvent.productAdded(
-                        productId: widget.productId,
-                        quantity: 1,
-                      ),
-                    );
-              },
+              onPressed: () => _onAddToCartPressed(user),
               label: Text('add_to_cart'.tr()),
             ),
           )
         ],
       ),
     );
+  }
+
+  void _onAddToCartPressed(User? user) {
+    if (user == null) {
+      AppRouter.router.navigateTo(context, Routes.login);
+      return;
+    }
+
+    _controller.forward(from: 0.0);
+
+    ref.read(cartNotifierProvider.notifier).addProduct(
+          productId: widget.productId,
+          quantity: 1,
+        );
   }
 }
 
