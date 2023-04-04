@@ -102,7 +102,7 @@ final logoutDialogHandler = Handler(
                                 terminateAllSessions: terminateAllSessions);
                           },
                           child: Text(
-                            "logout".tr().toUpperCase(),
+                            "logout_action".tr().toUpperCase(),
                           ),
                         ),
                       );
